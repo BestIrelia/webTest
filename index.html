@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>跨域的是实现</title>
+</head>
+<body>
+<h1>跨域请求</h1>
+<h2>方法一</h2>
+服务器端进行头部配置：
+Access-Control-Allow-Origin:*;
+*为允许所有人跨域，也可以不为*，而指定为特定的域名
+<h2>方法二</h2>
+服务器不配置头部，，但要接收前端传来的callback参数，并返回给前端，详细见jsonp.php文件
+<button id="btn1">jquery实现跨域请求</button><br>
+<button id="btn2">js实现跨域请求</button>
+<script src="js/jquery-1.11.3.js"></script>
+<script>
+    $('#btn1').click(function(){
+        console.log('jquery跨域');
+//        方法1
+        $.ajax({
+            type: 'GET',
+            url: 'http://management.applinzi.com/data/jsonp.php',
+            data:'start=0',//传递参数到后台
+            dataType: 'jsonp',  //JSONP请求
+            success: function(data){
+                console.log('$.ajax开始处理成功的响应数据');
+                console.log(data);
+                console.log(data[0]);
+                console.log('成功跨域了');
+            },
+            error: function(data){
+                console.log('$.ajax开始处理失败的响应数据');
+                console.log(arguments);
+                console.log(data);
+            }
+        });
+//        方法2
+        $.getJSON('http://management.applinzi.com/data/jsonp.php?callback=?','start=1',function(data){
+            console.log('$.getJSON开始处理响应数据');
+            console.log(data);
+        })
+    });
+
+    document.getElementById("btn2").onclick=function () {
+        console.log('原生js跨域');
+        var scriptElement = document.createElement("script");
+        scriptElement.src = "http://management.applinzi.com/data/jsonp.php?callback=callback&start=1";
+        document.head.appendChild(scriptElement);
+
+    };
+    function callback(data) {
+        console.log('原生js开始处理响应数据');
+        console.log(data);
+    }
+</script>
+</body>
+</html>
